@@ -10,14 +10,16 @@ from forms import CreatePostForm, RegisterUserForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 from functools import wraps
 from sqlalchemy import ForeignKey
+import os
+
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get('8BYkEfBA6O6donzWlSihBXox7C0sKR6b')
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgredb_3ewu_user:B2i7yi8mkCmBpEC8rpi4D9tuGwByat37@dpg-cet2rkhgp3jmgl7j3ab0-a.singapore-postgres.render.com/postgredb_3ewu'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -61,8 +63,8 @@ class Comments(db.Model):
     parent_post = relationship("BlogPost", back_populates="comments")
     parent_post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
 
 ##LOGIN Manager
 login_manager = LoginManager()
